@@ -1,17 +1,28 @@
-FROM openjdk:21-jdk-slim
+# Stage 1: Build stage
+FROM maven:3.9-eclipse-temurin-21-alpine AS builder
 
 WORKDIR /app
 
-# Copy Maven files
+# Copy only pom.xml first to cache dependencies
 COPY pom.xml .
+
+# Download dependencies (this layer will be cached)
+RUN mvn dependency:go-offline -B
+
+# Copy source code
 COPY src ./src
 
-# Install Maven
-RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
-
 # Build the application
-RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests -B
+
+# Stage 2: Runtime stage
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+
+# Copy the built JAR from builder stage
+COPY --from=builder /app/target/events-service-1.0.0.jar app.jar
 
 # Run the application
 EXPOSE 8082
-CMD ["java", "-jar", "target/events-service-1.0.0.jar"]
+CMD ["java", "-jar", "app.jar"]
