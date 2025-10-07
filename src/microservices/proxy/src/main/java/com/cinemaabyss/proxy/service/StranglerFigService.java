@@ -11,7 +11,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
-public class StranglerFсвigService {
+public class StranglerFigService {
 
     private static final Logger logger = LoggerFactory.getLogger(StranglerFigService.class);
 
