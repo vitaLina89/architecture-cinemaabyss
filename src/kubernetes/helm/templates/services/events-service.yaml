@@ -32,7 +32,7 @@ spec:
         env:
         - name: PORT
           value: "{{ .Values.eventsService.service.targetPort }}"
-        - name: KAFKA_BOOTSTRAP_SERVERS
+        - name: KAFKA_BROKERS
           value: "kafka:9092"
         envFrom:
         - configMapRef:
